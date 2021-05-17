@@ -1,0 +1,12 @@
+Gwas_data <- read.table("chry83.Dchry2.1.BT.DP8GQ30.min75minVar10Het75BI.ctg3_chr15.P1.qassoc", header=TRUE)
+png('chry83.Dchry2.1.BT.DP8GQ30.min75minVar10Het75BI.ctg3_chr15.P1.qassoc.png', width=4000
+    , height=1000, res=200)
+par(mfrow=c(1, 1), mar=c(3, 2, 1, 1))
+plot (Gwas_data$SNP, -log(Gwas_data$P), cex=0.5, ylim=c(0, 60))
+dev.off()
+gwas_data_best <- subset(Gwas_data, -log(P)>12)
+minP <- order (Gwas_data$P) [1:10]
+gwas_data_best <- Gwas_data[minP,]
+gwas_data_best <- gwas_data_best[order(gwas_data_best$BP),]
+points (Gwas_data$BP[minP], -log(Gwas_data$P[minP]), cex=0.2, col="red")
+sort(Gwas_data$BP[minP])
