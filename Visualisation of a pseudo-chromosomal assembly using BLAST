@@ -1,0 +1,23 @@
+# Import alignmenmts table and filter as you like
+source("plot_alignments.R")
+
+# Import lengths of the query and target sequences
+# SM18S10_abyss_k96-contigs is my de novo genome assembly from a dark individual 
+# Dchry2.1_ctg3_chr15_6250001-6350000.fa.fai is a previously made reference genome from a light individual 
+query_lens <- get.contig.lengths("Sequences/SM18S10_abyss_k96-contigs.fa.fai")
+target_lens <- get.contig.lengths("Dchry2.1_ctg3_chr15_6250001-6350000.fa.fai")
+names(query_lens)<- paste0("c", names(query_lens))
+
+# Import alignmenmts table and filter as you like
+blast_results <- import_blast("SM18S10.blast_abyss_k96_ctg3_chr15_6250001-6350000")
+blast_results <- subset(blast_results, e==0 & len>=1000)
+
+blast_results$query<- paste0("c", blast_results$query)
+
+# extract alignment pairs (each unique pair of contigs that share alignments
+
+alipairs <- extract_alipairs(blast_results)
+
+# make plot
+
+plot.alignments.multi(alipairs, target_lens=target_lens, query_lens=query_lens, colour_by="identity")
