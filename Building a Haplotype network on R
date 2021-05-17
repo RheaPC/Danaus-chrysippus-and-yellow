@@ -1,0 +1,28 @@
+#Adapted from https://johnbhorne.wordpress.com/2016/09/15/still-making-haplotype-networks-the-old-way-how-to-do-it-in-r/
+#ClustalW,ape and pegas need to be installed before starting. 
+
+library("ape")
+library("pegas")
+
+#When loading data into R, ensure it is in a fasta format
+#The data i have loaded is the product of an alignment using 166 DNA sequences of 160 D. chrysippus, 2 D. petillia and 4 D. gilipus outgroup species
+#The data had already been trimmed and filtered so we did not need to code for that
+
+dataAli<-read.dna("qns86.Dchry2.1.BT.DP8GQ30.min75Bi.ctg3_chr15_6302923-6303215.shapeit.fa", format="fasta")
+dataAli<-updateLabel(dataAli, labels$ID, labels$Region)
+dataHaplo<-haplotype(dataAli)
+dataHaplo<-sort(dataHaplo, what = "labels")
+dataNet<-haploNet(dataHaplo)
+countHap <- function(hap = h, dna = x){
+  with(
+    stack(setNames(attr(hap, "index"), rownames(hap))),
+    table(hap = ind, pop = attr(dna, "dimnames")[[1]][values])
+  )
+}
+write.table(countHap (dataHaplo, dataAli),file="qns86.Dchry2.1.BT.DP8GQ30.min75Bi.ctg3_chr15_6302923-6303215.shapeit.named5.haplo.txt", sep="\t", quote=FALSE)
+pdf(file="qns86.Dchry2.1.BT.DP8GQ30.min75Bi.ctg3_chr15_6302923-6303215.shapeit.named5.haplo.pdf", width = 20, height = 15, pointsize = 10)
+plot(dataNet, size=attr(dataNet, "freq"), scale.ratio=1, pie=countHap(dataHaplo, dataAli), show.mutation=1)
+legend("bottomright", colnames(countHap(dataHaplo, dataAli)), col=rainbow(ncol(countHap(dataHaplo, dataAli))), pch=19, ncol=2)
+dev.off()
+
+#The haplotype network was later edited on adobe photoshop.
