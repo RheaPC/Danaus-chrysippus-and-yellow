@@ -1,0 +1,34 @@
+                       
+#!/bin/bash
+
+#$ -V
+#$ -cwd
+#$ -j y
+#$ -o abyss.$JOB_ID.log
+
+# Submit using:
+# qsub -pe smp64 12 abyss_qsub.sh <threads> <assembly_name> <K> <READ1_file> <R$
+
+# make a working directory in /scratch for this job
+SCRATCH=/scratch/$USER/$JOB_ID/abyss
+mkdir -p $SCRATCH
+
+
+THREADS=$1
+NAME=$2
+K=$3
+READ1=$4
+READ2=$5
+
+echo "about to run this command:"
+echo "abyss-pe np=$THREADS name=$NAME k=$K in="$READ1 $READ2"" 
+
+# run the blast command and save the output to /scratch
+abyss-pe --directory=$SCRATCH np=$THREADS name=$NAME k=$K  in="$READ1 $READ2" 
+
+# move the result file back to the directory the job was submitted from using r$
+rsync -av $SCRATCH ./
+
+# remove the directory ceated for this job ID to clear up any unwanted files
+rm -rf /scratch/$USER/$JOB_ID
+
