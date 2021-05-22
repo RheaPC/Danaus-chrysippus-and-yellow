@@ -1,0 +1,27 @@
+ass#!/bin/bash
+
+#$ -V
+#$ -cwd
+#$ -j y
+#$ -o plink.$JOB_ID.log
+
+
+# make a directory in /scratch for this job
+SCRATCH=/scratch/$USER/$JOB_ID
+mkdir -p $SCRATCH
+
+THREADS=$1
+INPUT_PREFIX=$2
+OUTPUT_PREFIX=$3
+PHENO=$4
+
+echo "About to run this plink command:"
+echo "plink --file $INPUT_PREFIX --out $OUTPUT_PREFIX --allow-extra-chr --pheno $PHENO --all-pheno --assoc perm --allow-no-sex --missing-genotype N --threads $THREADS"
+# run the bwa command and save the output to /scratch
+plink --file $INPUT_PREFIX --out $SCRATCH/$OUTPUT_PREFIX --allow-extra-chr --pheno $PHENO --all-pheno --assoc perm --allow-no-sex --missing-genotype N --threads $THREADS
+
+# move the result file back to the directory the job was submitted from using rsync
+rsync -av $SCRATCH/ ./
+
+# remove the directory ceated for this job ID to clear up any unwanted files
+rm -rf $SCRATCH
