@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#$ -V
+#$ -cwd
+#$ -j y
+#$ -o blast.$JOB_ID.log
+
+
+# make a directory in /scratch for this job
+SCRATCH=/scratch/$USER/$JOB_ID
+mkdir -p $SCRATCH
+
+IN=$1
+dbtype=$2
+OUT=$3
+
+echo "About to run this makeblastdb command:"
+echo "makeblastdb -in $IN -dbtype $dbtype -out $SCRATCH/$OUT"
+# run the bwa command and save the output to /scratch
+makeblastdb -in $IN -dbtype $dbtype -out $SCRATCH/$OUT 
+
+# move the result file back to the directory the job was submitted from using rsync
+rsync -av $SCRATCH/ ./
+
+# remove the directory ceated for this job ID to clear up any unwanted files
+rm -rf $SCRATCH
