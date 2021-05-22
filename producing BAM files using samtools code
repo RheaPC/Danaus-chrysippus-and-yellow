@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#$ -V
+#$ -cwd
+#$ -j y
+#$ -o samtools.$JOB_ID.log
+
+
+# make a working directory in /scratch for this job
+SCRATCH=/scratch/$USER/$JOB_ID
+mkdir -p $SCRATCH
+
+INPUT=$1
+OUTPUT=$2
+REGION=$3
+
+echo "About to run this samtools command:"
+echo "samtools view -b $INPUT $REGION > $SCRATCH/$OUTPUT"
+# run the bwa command and save the output to /scratch
+samtools view -b $INPUT $REGION > $SCRATCH/$OUTPUT
+
+samtools index $SCRATCH/$OUTPUT
+
+# move the result file back to the directory the job was submitted from using rsync
+rsync -av $SCRATCH/ ./
+
+# remove the directory ceated for this job ID to clear up any unwanted files
+rm -rf $SCRATCH
