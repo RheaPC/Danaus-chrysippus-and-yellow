@@ -1,0 +1,14 @@
+#check the contig length of the new assemblies 
+#read data from the assembled k96v contigs
+  fai= read.table('SM16K580_abyss_k96-contigs.fa.fai')
+
+## visualise the plots as a histogram
+hist(fai[,2], breaks=500, ylim=c(0, 800))
+hist(fai[,2], breaks=500, xlim=c(0, 15000))
+fai= read.table('SM18S10_abyss_k96-contigs.fa.fai')
+hist(fai[,2], breaks=500, ylim=c(0, 800))
+contig_lengths_sorted= sort(fai[,2], decreasing=TRUE)
+contigs_over5kb= contig_lengths_sorted[contig_lengths_sorted>5000]
+sum(contigs_over5kb)
+length(contigs_over5kb)
+fai[which(fai[,1]==3934434), 2]
